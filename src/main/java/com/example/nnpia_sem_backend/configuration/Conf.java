@@ -12,11 +12,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 public class Conf {
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
