@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProcedureDto {
-    String name;
-    Double price;
+    private String name;
+    private Double price;
 }

@@ -1,5 +1,6 @@
 package com.example.nnpia_sem_backend.service;
 
+import com.example.nnpia_sem_backend.dto.ProcedureDto;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class ProcedureService {
         if (procedureRepository.findById(id).isPresent()) {
             return procedureRepository.findById(id).get();
         } else {
-            throw new NoSuchElementException("Senior with ID: " + id + " was not found!");
+            throw new NoSuchElementException("Procedure with ID: " + id + " was not found!");
         }
     }
 

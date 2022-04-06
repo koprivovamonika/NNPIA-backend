@@ -1,5 +1,6 @@
 package com.example.nnpia_sem_backend.configuration;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,11 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 public class Conf {
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
     @Bean
     public Docket api() {

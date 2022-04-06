@@ -2,12 +2,16 @@ package com.example.nnpia_sem_backend.entity;
 
 import com.sun.istack.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.Date;
 import javax.validation.constraints.Email;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Reservation {
     @Id
@@ -16,12 +20,14 @@ public class Reservation {
     private Long id;
 
     @NotNull
-    @Temporal(TemporalType.TIME)
-    private Date startTime;
+    private LocalTime startTime;
 
     @NotNull
-    @Temporal(TemporalType.TIME)
-    private Date endTime;
+    private LocalTime endTime;
+
+    @NotNull
+    @Temporal(TemporalType.DATE)
+    private Date reservationDate;
 
     @NotNull
     @Column

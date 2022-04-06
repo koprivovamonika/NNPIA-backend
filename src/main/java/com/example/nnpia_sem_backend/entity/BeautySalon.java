@@ -2,12 +2,16 @@ package com.example.nnpia_sem_backend.entity;
 
 import com.sun.istack.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "salon")
 public class BeautySalon {
@@ -21,12 +25,10 @@ public class BeautySalon {
     private String name;
 
     @NotNull
-    @Temporal(TemporalType.TIME)
-    private Date openingTime;
+    private LocalTime openingTime;
 
     @NotNull
-    @Temporal(TemporalType.TIME)
-    private Date closingTime;
+    private LocalTime closingTime;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "login_id", referencedColumnName = "id")
