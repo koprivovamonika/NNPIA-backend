@@ -26,7 +26,7 @@ public class BeautySalonService {
     @Autowired
     ReservationRepository reservationRepository;
 
-    private BeautySalon findById(Long id){
+    public BeautySalon findById(Long id){
         return beautySalonRepository.findBeautySalonById(id);
     }
 
@@ -42,15 +42,16 @@ public class BeautySalonService {
         LocalTime closingTime =beautySalon.getClosingTime();
 
         while (openingTime.getHour() < closingTime.getHour()){
+            boolean freeSlot = true;
             for (Reservation reservation : reservations) {
-                if((openingTime.isBefore(reservation.getStartTime()) && openingTime.plusHours(1).isBefore(reservation.getStartTime().plusMinutes(1))) ||
-                        (openingTime.isAfter(reservation.getEndTime().minusMinutes(1)) && openingTime.plusHours(1).isAfter(reservation.getEndTime()))){
-                    timeSlots.add(new TimeSlotDto(openingTime, openingTime.plusHours(1), true));
-                }else{
-                    timeSlots.add(new TimeSlotDto(openingTime, openingTime.plusHours(1), false));
-                }
-                openingTime = openingTime.plusHours(1);
+                if ((!openingTime.isBefore(reservation.getStartTime()) || !openingTime.plusHours(1).isBefore(reservation.getStartTime().plusMinutes(1))) &&
+                        (!openingTime.isAfter(reservation.getEndTime().minusMinutes(1)) || !openingTime.plusHours(1).isAfter(reservation.getEndTime()))) {
+                           freeSlot = false;
+                           break;
+                        }
             }
+            timeSlots.add(new TimeSlotDto(openingTime, openingTime.plusHours(1), freeSlot));
+            openingTime = openingTime.plusHours(1);
         }
 
         return timeSlots;
