@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 public class CreateReservationDtoIn {
-    @Email
+    @Email(message = "Email should be valid")
     private String email;
     private TimeSlotDto timeSlotDto;
     private Date date;

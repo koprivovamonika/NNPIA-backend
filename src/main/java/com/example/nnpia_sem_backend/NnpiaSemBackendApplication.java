@@ -1,5 +1,6 @@
 package com.example.nnpia_sem_backend;
 
+import com.example.nnpia_sem_backend.dto.CreateReservationDtoIn;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

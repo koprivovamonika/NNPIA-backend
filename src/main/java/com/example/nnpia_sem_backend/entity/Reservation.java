@@ -1,14 +1,13 @@
 package com.example.nnpia_sem_backend.entity;
 
 import com.sun.istack.NotNull;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.time.LocalTime;
 import java.util.Date;
-import javax.validation.constraints.Email;
 
 @Getter
 @Setter
@@ -31,7 +30,7 @@ public class Reservation {
 
     @NotNull
     @Column
-    @Email
+    @Email(message = "Email should be valid")
     private String email;
 
     @ManyToOne

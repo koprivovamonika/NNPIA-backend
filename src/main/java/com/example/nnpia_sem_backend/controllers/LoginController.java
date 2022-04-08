@@ -2,13 +2,13 @@ package com.example.nnpia_sem_backend.controllers;
 
 import com.example.nnpia_sem_backend.dto.LoginEditDto;
 import com.example.nnpia_sem_backend.entity.ApiResponse;
-import com.example.nnpia_sem_backend.entity.Login;
 import com.example.nnpia_sem_backend.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/user")
@@ -21,17 +21,10 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @GetMapping
-    public List<Login> getAll() {
-        return loginService.findAll();
-    }
-
-
     @PutMapping
     public ApiResponse<Boolean> updatePassword(@RequestBody LoginEditDto user) {
-        System.out.println("put");
         if (loginService.updatePassword(user)){
-            return new ApiResponse<>(HttpStatus.OK.value(), "", "User updated successfully.");
+            return new ApiResponse<>(HttpStatus.OK.value(), "User updated successfully.", true);
         }else{
             return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Wrong password.", false);
         }

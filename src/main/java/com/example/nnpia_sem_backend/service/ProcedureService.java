@@ -1,6 +1,5 @@
 package com.example.nnpia_sem_backend.service;
 
-import com.example.nnpia_sem_backend.dto.ProcedureDto;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ProcedureService {
@@ -20,32 +20,54 @@ public class ProcedureService {
     }
 
     public BeautyProcedure findById(Long id) {
-        if (procedureRepository.findById(id).isPresent()) {
-            return procedureRepository.findById(id).get();
+        Optional<BeautyProcedure> beautyProcedure = procedureRepository.findById(id);
+        if (beautyProcedure.isPresent()) {
+            return beautyProcedure.get();
         } else {
             throw new NoSuchElementException("Procedure with ID: " + id + " was not found!");
         }
     }
 
-    public BeautyProcedure findProcedureByName(String name){
+    public BeautyProcedure findProcedureByName(String name) {
         return procedureRepository.findByName(name);
     }
 
-    public void createProcedure(String name, Double price){
-        BeautyProcedure beautyProcedureByName = findProcedureByName(name);
-        if(beautyProcedureByName == null){
-            BeautyProcedure beautyProcedure = new BeautyProcedure();
-            beautyProcedure.setName(name);
-            beautyProcedure.setPrice(price);
+    public boolean createProcedure(BeautyProcedure beautyProcedure) {
+        BeautyProcedure beautyProcedureByName = findProcedureByName(beautyProcedure.getName());
+        if (beautyProcedureByName == null) {
             procedureRepository.save(beautyProcedure);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateProcedure(BeautyProcedure beautyProcedure, Long id) {
+        try {
+            if (!procedureRepository.findByNameAndIdIsNot(beautyProcedure.getName(), id).isPresent()) {
+                BeautyProcedure beautyProcedureById = findById(id);
+                if (beautyProcedureById != null) {
+                    beautyProcedureById.setName(beautyProcedure.getName());
+                    beautyProcedureById.setPrice(beautyProcedure.getPrice());
+                    procedureRepository.save(beautyProcedureById);
+                    return true;
+                }
+            }
+            return false;
+        } catch (NoSuchElementException exception) {
+            return false;
         }
     }
 
-    public void changePriceOfProcedure(String name, Double price){
-        BeautyProcedure beautyProcedure = findProcedureByName(name);
-        if (beautyProcedure != null) {
-            beautyProcedure.setPrice(price);
-            procedureRepository.save(beautyProcedure);
+    public boolean deleteProcedure(Long id) {
+        try {
+            BeautyProcedure beautyProcedure = findById(id);
+            if (beautyProcedure != null) {
+                procedureRepository.deleteById(id);
+                return true;
+            }
+            return false;
+        } catch (NoSuchElementException exception) {
+            return false;
         }
     }
 }

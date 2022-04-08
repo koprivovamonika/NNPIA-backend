@@ -1,7 +1,6 @@
 package com.example.nnpia_sem_backend.service;
 
 import com.example.nnpia_sem_backend.dto.TimeSlotDto;
-import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.BeautySalon;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.repository.BeautySalonRepository;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 

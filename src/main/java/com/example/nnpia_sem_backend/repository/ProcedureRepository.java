@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ProcedureRepository extends JpaRepository<BeautyProcedure, Long> {
     BeautyProcedure findByName(String name);
+
+    Optional<BeautyProcedure> findByNameAndIdIsNot(String name, Long id);
 }
