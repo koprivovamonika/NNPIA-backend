@@ -1,5 +1,6 @@
 package com.example.nnpia_sem_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +30,9 @@ public class Reservation {
     private Date reservationDate;
 
     @NotNull
+    private ReservationStatus status;
+
+    @NotNull
     @Column
     @Email(message = "Email should be valid")
     private String email;
@@ -39,6 +43,7 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "salon_id")
+    @JsonIgnore
     private BeautySalon beautySalon;
 
 }
