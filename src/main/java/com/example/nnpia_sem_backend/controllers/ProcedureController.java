@@ -25,9 +25,9 @@ public class ProcedureController {
     private ModelMapper modelMapper;
 
     @GetMapping("/public/procedures")
-    public List<ProcedureDto> getAll() {
+    public ApiResponse<List<ProcedureDto>> getAll() {
         List<BeautyProcedure> beautyProcedures = procedureService.findAll();
-        return beautyProcedures.stream().map(this::convertToDto).collect(Collectors.toList());
+        return  new ApiResponse<>(HttpStatus.OK.value(), "OK.",beautyProcedures.stream().map(this::convertToDto).collect(Collectors.toList()));
     }
 
     @PostMapping("/api/procedure")

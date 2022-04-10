@@ -65,14 +65,9 @@ public class ReservationService {
         }
     }
 
-    public Page<Reservation> getReservationByDate(Pageable paging, Long salonId, Date reservationDate){
-        return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDate(salonId, reservationDate, paging);
+    public Page<Reservation> getReservationByDateAndStatus(Pageable paging, Long salonId, Date reservationDate, ReservationStatus status){
+        return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDateAndStatus(salonId, reservationDate, status, paging);
     }
-
-    public Page<Reservation> getReservationByStatus(Pageable paging, Long salonId, ReservationStatus status){
-        return reservationPagingRepository.findAllByBeautySalon_IdAndStatus(salonId, status, paging);
-    }
-
 
     private void sendEmail(Reservation reservation, String subject, String text) {
         Thread t = new Thread(() -> {

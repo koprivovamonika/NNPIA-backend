@@ -83,15 +83,8 @@ public class ReservationController {
     }
 
     @GetMapping("/date")
-    public ApiResponse<ReservationPagingDto> getAllByDate(Long salonId,@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, Pageable pageable){
-        Page<Reservation> pagedResult = reservationService.getReservationByDate(pageable, salonId, date);
-        ReservationPagingDto reservationPagingDto = convertToPagingDto(pagedResult);
-        return new ApiResponse<>(HttpStatus.OK.value(), "", reservationPagingDto);
-    }
-
-    @GetMapping("/status")
-    public ApiResponse<ReservationPagingDto> getAllByStatus(Long salonId, ReservationStatus status, Pageable pageable){
-        Page<Reservation> pagedResult = reservationService.getReservationByStatus(pageable, salonId, status);
+    public ApiResponse<ReservationPagingDto> getAllByDate(Long salonId,@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, ReservationStatus status, Pageable pageable){
+        Page<Reservation> pagedResult = reservationService.getReservationByDateAndStatus(pageable, salonId, date, status);
         ReservationPagingDto reservationPagingDto = convertToPagingDto(pagedResult);
         return new ApiResponse<>(HttpStatus.OK.value(), "", reservationPagingDto);
     }
