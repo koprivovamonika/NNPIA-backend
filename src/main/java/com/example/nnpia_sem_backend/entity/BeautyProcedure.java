@@ -22,4 +22,7 @@ public class BeautyProcedure {
     @NotNull
     @Column
     private Double price;
+
+    @Column
+    private String description;
 }

@@ -6,4 +6,5 @@ import lombok.Data;
 public class ProcedureDto {
     private String name;
     private Double price;
+    private String description;
 }

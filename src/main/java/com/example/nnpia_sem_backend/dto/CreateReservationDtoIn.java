@@ -11,4 +11,6 @@ public class CreateReservationDtoIn {
     private String email;
     private TimeSlotDto timeSlotDto;
     private Date date;
+    private ProcedureDto procedureDto;
+    private Long salonId;
 }

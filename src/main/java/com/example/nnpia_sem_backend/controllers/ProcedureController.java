@@ -3,6 +3,7 @@ package com.example.nnpia_sem_backend.controllers;
 import com.example.nnpia_sem_backend.dto.ProcedureDto;
 import com.example.nnpia_sem_backend.entity.ApiResponse;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
+import com.example.nnpia_sem_backend.service.LoginService;
 import com.example.nnpia_sem_backend.service.ProcedureService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class ProcedureController {
 
     @Autowired
     private ModelMapper modelMapper;
+
 
     @GetMapping("/public/procedures")
     public ApiResponse<List<ProcedureDto>> getAll() {

@@ -1,6 +1,8 @@
 package com.example.nnpia_sem_backend;
 
 import com.example.nnpia_sem_backend.dto.CreateReservationDtoIn;
+import com.example.nnpia_sem_backend.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,8 @@ public class NnpiaSemBackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NnpiaSemBackendApplication.class, args);
+
+
     }
 
 }

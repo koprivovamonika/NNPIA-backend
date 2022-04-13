@@ -28,6 +28,11 @@ public class ProcedureService {
         }
     }
 
+    public Long findIdByName(String name) {
+        BeautyProcedure procedure = findProcedureByName(name);
+        return procedure.getId();
+    }
+
     public BeautyProcedure findProcedureByName(String name) {
         return procedureRepository.findByName(name);
     }

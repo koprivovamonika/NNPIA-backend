@@ -1,23 +1,24 @@
 package com.example.nnpia_sem_backend.controllers;
 
 import com.example.nnpia_sem_backend.dto.CreateReservationDtoIn;
-import com.example.nnpia_sem_backend.dto.ProcedureDto;
 import com.example.nnpia_sem_backend.dto.ReservationPagingDto;
 import com.example.nnpia_sem_backend.dto.TimeSlotDto;
 import com.example.nnpia_sem_backend.entity.ApiResponse;
-import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.service.BeautySalonService;
 import com.example.nnpia_sem_backend.service.ProcedureService;
 import com.example.nnpia_sem_backend.service.ReservationService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.modelmapper.convention.MatchingStrategies;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -47,11 +48,8 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn, Long procedureId, Long salonId) throws ParseException {
+    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn) throws ParseException {
         Reservation reservation = convertToEntity(createReservationDtoIn);
-        reservation.setBeautyProcedure(procedureService.findById(procedureId));
-        reservation.setBeautySalon(beautySalonService.findById(salonId));
-        reservation.setStatus(ReservationStatus.CREATED);
         if(reservationService.createReservation(reservation)){
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", true);
         }
@@ -89,14 +87,39 @@ public class ReservationController {
         return new ApiResponse<>(HttpStatus.OK.value(), "", reservationPagingDto);
     }
 
+
     private Reservation convertToEntity(CreateReservationDtoIn createReservationDtoIn) throws ParseException {
-        Reservation reservation = modelMapper.map(createReservationDtoIn, Reservation.class);
+        /*PropertyMap<CreateReservationDtoIn, Reservation> reservationPropertyMap = new PropertyMap<CreateReservationDtoIn, Reservation>() {
+            protected void configure() {
+                map().setEmail(source.getEmail());
+                map().setReservationDate(source.getDate());
+                map().setStartTime(source.getTimeSlotDto().getStartTime());
+                map().setEndTime(source.getTimeSlotDto().getEndTime());
+            }
+        };*/
+        Reservation reservation = new Reservation();
         reservation.setEmail(createReservationDtoIn.getEmail());
         reservation.setReservationDate(createReservationDtoIn.getDate());
         reservation.setStartTime(createReservationDtoIn.getTimeSlotDto().getStartTime());
         reservation.setEndTime(createReservationDtoIn.getTimeSlotDto().getEndTime());
+        reservation.setStatus(ReservationStatus.CREATED);
+        reservation.setBeautyProcedure(procedureService.findById(procedureService.findIdByName(createReservationDtoIn.getProcedureDto().getName())));
+        reservation.setBeautySalon(beautySalonService.findById(createReservationDtoIn.getSalonId()));
 
         return reservation;
+
+
+
+        /*Reservation reservation = modelMapper.map(createReservationDtoIn, Reservation.class);
+        reservation.setEmail(createReservationDtoIn.getEmail());
+        reservation.setReservationDate(createReservationDtoIn.getDate());
+        reservation.setStartTime(createReservationDtoIn.getTimeSlotDto().getStartTime());
+        reservation.setEndTime(createReservationDtoIn.getTimeSlotDto().getEndTime());
+        reservation.setBeautyProcedure(procedureService.findById(procedureService.findIdByName(createReservationDtoIn.getProcedureDto().getName())));
+        reservation.setBeautySalon(beautySalonService.findById(createReservationDtoIn.getSalonId()));
+        reservation.setStatus(ReservationStatus.CREATED);
+
+        return reservation;*/
     }
 
     private ReservationPagingDto convertToPagingDto(Page<Reservation> pagedResult){
