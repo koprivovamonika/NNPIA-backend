@@ -3,6 +3,7 @@ package com.example.nnpia_sem_backend.service;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public class ProcedureService {
                 if (beautyProcedureById != null) {
                     beautyProcedureById.setName(beautyProcedure.getName());
                     beautyProcedureById.setPrice(beautyProcedure.getPrice());
+                    beautyProcedureById.setDescription(beautyProcedure.getDescription());
                     procedureRepository.save(beautyProcedureById);
                     return true;
                 }
@@ -72,6 +74,8 @@ public class ProcedureService {
             }
             return false;
         } catch (NoSuchElementException exception) {
+            return false;
+        } catch (DataIntegrityViolationException exception){
             return false;
         }
     }

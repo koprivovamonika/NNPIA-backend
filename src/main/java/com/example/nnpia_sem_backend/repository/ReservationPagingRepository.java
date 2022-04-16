@@ -12,4 +12,5 @@ import java.util.Date;
 @Repository
 public interface ReservationPagingRepository extends PagingAndSortingRepository<Reservation, Long> {
     Page<Reservation> findAllByBeautySalon_IdAndReservationDateAndStatus(Long salonId, Date reservationDate,ReservationStatus status, Pageable pageVariable);
+    Page<Reservation> findAllByBeautySalon_IdAndReservationDate(Long salonId, Date reservationDate, Pageable pageVariable);
 }

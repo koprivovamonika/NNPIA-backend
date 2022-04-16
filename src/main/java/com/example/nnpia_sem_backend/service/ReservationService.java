@@ -69,6 +69,10 @@ public class ReservationService {
         return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDateAndStatus(salonId, reservationDate, status, paging);
     }
 
+    public Page<Reservation> getReservationByDate(Pageable paging, Long salonId, Date reservationDate){
+        return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDate(salonId, reservationDate, paging);
+    }
+
     private void sendEmail(Reservation reservation, String subject, String text) {
         Thread t = new Thread(() -> {
             try {
