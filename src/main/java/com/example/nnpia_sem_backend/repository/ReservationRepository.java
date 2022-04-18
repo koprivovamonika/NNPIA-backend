@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
+
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findReservationByReservationDate(Date date);
+    Boolean existsByBeautyProcedure_Id(Long id);
 }

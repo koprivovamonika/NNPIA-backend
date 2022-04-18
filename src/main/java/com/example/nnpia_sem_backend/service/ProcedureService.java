@@ -1,7 +1,10 @@
 package com.example.nnpia_sem_backend.service;
 
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
+import com.example.nnpia_sem_backend.entity.ProcedureStatus;
+import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
+import com.example.nnpia_sem_backend.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -14,10 +17,13 @@ import java.util.Optional;
 public class ProcedureService {
 
     @Autowired
-    ProcedureRepository procedureRepository;
+    protected ProcedureRepository procedureRepository;
+
+    @Autowired
+    protected ReservationRepository reservationRepository;
 
     public List<BeautyProcedure> findAll() {
-        return procedureRepository.findAll();
+        return procedureRepository.findAllByStatus(ProcedureStatus.ACTIVE);
     }
 
     public BeautyProcedure findById(Long id) {
@@ -41,6 +47,12 @@ public class ProcedureService {
     public boolean createProcedure(BeautyProcedure beautyProcedure) {
         BeautyProcedure beautyProcedureByName = findProcedureByName(beautyProcedure.getName());
         if (beautyProcedureByName == null) {
+            beautyProcedure.setStatus(ProcedureStatus.ACTIVE);
+            procedureRepository.save(beautyProcedure);
+            return true;
+        }else if(beautyProcedureByName.getStatus() == ProcedureStatus.INACTIVE){
+            beautyProcedure.setId(beautyProcedureByName.getId());
+            beautyProcedure.setStatus(ProcedureStatus.ACTIVE);
             procedureRepository.save(beautyProcedure);
             return true;
         }
@@ -69,7 +81,12 @@ public class ProcedureService {
         try {
             BeautyProcedure beautyProcedure = findById(id);
             if (beautyProcedure != null) {
-                procedureRepository.deleteById(id);
+                if(reservationRepository.existsByBeautyProcedure_Id(id)){
+                    beautyProcedure.setStatus(ProcedureStatus.INACTIVE);
+                    procedureRepository.save(beautyProcedure);
+                }else{
+                    procedureRepository.deleteById(id);
+                }
                 return true;
             }
             return false;

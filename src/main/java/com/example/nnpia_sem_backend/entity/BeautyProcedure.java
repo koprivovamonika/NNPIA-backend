@@ -25,4 +25,8 @@ public class BeautyProcedure {
 
     @Column
     private String description;
+
+    @NotNull
+    @Column
+    private ProcedureStatus status;
 }

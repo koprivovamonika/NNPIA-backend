@@ -9,9 +9,6 @@ import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.service.BeautySalonService;
 import com.example.nnpia_sem_backend.service.ProcedureService;
 import com.example.nnpia_sem_backend.service.ReservationService;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,9 +34,6 @@ public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
 
     @GetMapping("/public/reservation")
     public List<TimeSlotDto> getAll(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, Long id) {
@@ -55,7 +49,7 @@ public class ReservationController {
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create reservation failed.", false);
     }
 
-    @PutMapping("/api/confirm")
+    @PutMapping("/api/reservation/confirm")
     public ApiResponse<Boolean> confirmReservation(Long resId){
         if (reservationService.confirmReservation(resId)) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation confirmed successfully.", true);
@@ -63,7 +57,7 @@ public class ReservationController {
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Confirm reservation failed.", false);
     }
 
-    @PutMapping("/api/asDone")
+    @PutMapping("/api/reservation/asDone")
     public ApiResponse<Boolean> setAsDone(Long resId){
         if (reservationService.setAsDone(resId)) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation was set as done.", true);
@@ -71,7 +65,7 @@ public class ReservationController {
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Setting reservation as done failed.", false);
     }
 
-    @DeleteMapping("/api/delete")
+    @DeleteMapping("/api/reservation")
     public ApiResponse<Boolean> cancelReservation(Long id, String description) {
         if (reservationService.cancelReservation(id, description)) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation cancelled successfully.", true);
@@ -79,7 +73,7 @@ public class ReservationController {
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Cancel reservation failed.", false);
     }
 
-    @GetMapping("/api/res")
+    @GetMapping("/api/reservation")
     public ApiResponse<ReservationPagingDto> getAllByDateAndStatus(Long salonId,@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, ReservationStatus status, Pageable pageable){
         Page<Reservation> pagedResult;
         if(status != ReservationStatus.CREATED && status != ReservationStatus.CONFIRMED && status != ReservationStatus.DONE){

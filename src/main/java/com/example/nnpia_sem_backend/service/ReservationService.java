@@ -1,6 +1,5 @@
 package com.example.nnpia_sem_backend.service;
 
-import com.example.nnpia_sem_backend.dto.ReservationPagingDto;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.ReservationPagingRepository;
