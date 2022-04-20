@@ -1,5 +1,6 @@
 package com.example.nnpia_sem_backend.controllers;
 
+import com.example.nnpia_sem_backend.dto.ConfirmDtoIn;
 import com.example.nnpia_sem_backend.dto.CreateReservationDtoIn;
 import com.example.nnpia_sem_backend.dto.ReservationPagingDto;
 import com.example.nnpia_sem_backend.dto.TimeSlotDto;
@@ -50,8 +51,8 @@ public class ReservationController {
     }
 
     @PutMapping("/api/reservation/confirm")
-    public ApiResponse<Boolean> confirmReservation(Long resId){
-        if (reservationService.confirmReservation(resId)) {
+    public ApiResponse<Boolean> confirmReservation(@RequestBody ConfirmDtoIn resId){
+        if (reservationService.confirmReservation(resId.getReservationId())) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation confirmed successfully.", true);
         }
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Confirm reservation failed.", false);
