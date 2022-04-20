@@ -1,9 +1,6 @@
 package com.example.nnpia_sem_backend.controllers;
 
-import com.example.nnpia_sem_backend.dto.ConfirmDtoIn;
-import com.example.nnpia_sem_backend.dto.CreateReservationDtoIn;
-import com.example.nnpia_sem_backend.dto.ReservationPagingDto;
-import com.example.nnpia_sem_backend.dto.TimeSlotDto;
+import com.example.nnpia_sem_backend.dto.*;
 import com.example.nnpia_sem_backend.entity.ApiResponse;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
@@ -26,14 +23,17 @@ import java.util.List;
 @RestController
 @RequestMapping()
 public class ReservationController {
-    @Autowired
-    BeautySalonService beautySalonService;
+    private final BeautySalonService beautySalonService;
 
-    @Autowired
-    ProcedureService procedureService;
+    private final ProcedureService procedureService;
 
-    @Autowired
-    ReservationService reservationService;
+    private final ReservationService reservationService;
+
+    public ReservationController(BeautySalonService beautySalonService, ProcedureService procedureService, ReservationService reservationService) {
+        this.beautySalonService = beautySalonService;
+        this.procedureService = procedureService;
+        this.reservationService = reservationService;
+    }
 
 
     @GetMapping("/public/reservation")
@@ -42,7 +42,7 @@ public class ReservationController {
     }
 
     @PostMapping("/public/reservation")
-    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn) throws ParseException {
+    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn){
         Reservation reservation = convertToEntity(createReservationDtoIn);
         if(reservationService.createReservation(reservation)){
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", true);
@@ -59,16 +59,16 @@ public class ReservationController {
     }
 
     @PutMapping("/api/reservation/asDone")
-    public ApiResponse<Boolean> setAsDone(Long resId){
-        if (reservationService.setAsDone(resId)) {
+    public ApiResponse<Boolean> setAsDone(@RequestBody ConfirmDtoIn resId){
+        if (reservationService.setAsDone(resId.getReservationId())) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation was set as done.", true);
         }
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Setting reservation as done failed.", false);
     }
 
-    @DeleteMapping("/api/reservation")
-    public ApiResponse<Boolean> cancelReservation(Long id, String description) {
-        if (reservationService.cancelReservation(id, description)) {
+    @PutMapping("/api/reservation/cancel")
+    public ApiResponse<Boolean> cancelReservation(@RequestBody CancelDtoIn cancelDtoIn) {
+        if (reservationService.cancelReservation(cancelDtoIn.getReservationId(), cancelDtoIn.getDescription())) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation cancelled successfully.", true);
         }
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Cancel reservation failed.", false);
@@ -87,7 +87,7 @@ public class ReservationController {
     }
 
 
-    private Reservation convertToEntity(CreateReservationDtoIn createReservationDtoIn) throws ParseException {
+    private Reservation convertToEntity(CreateReservationDtoIn createReservationDtoIn){
         Reservation reservation = new Reservation();
         reservation.setEmail(createReservationDtoIn.getEmail());
         reservation.setReservationDate(createReservationDtoIn.getDate());
