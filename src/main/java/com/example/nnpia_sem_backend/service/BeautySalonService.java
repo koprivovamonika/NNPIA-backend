@@ -6,6 +6,7 @@ import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.BeautySalonRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -18,16 +19,11 @@ import java.util.List;
 
 @Service
 public class BeautySalonService {
+    @Autowired
     protected BeautySalonRepository beautySalonRepository;
+
+    @Autowired
     protected ReservationRepository reservationRepository;
-
-    public BeautySalonService() {
-    }
-
-    public BeautySalonService(BeautySalonRepository beautySalonRepository, ReservationRepository reservationRepository) {
-        this.beautySalonRepository = beautySalonRepository;
-        this.reservationRepository = reservationRepository;
-    }
 
     public BeautySalon findById(Long id) {
         return beautySalonRepository.findBeautySalonById(id);
