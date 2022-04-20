@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping
 public class ProcedureController {
-    @Autowired
-    ProcedureService procedureService;
+    private final ProcedureService procedureService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    public ProcedureController(ProcedureService procedureService, ModelMapper modelMapper) {
+        this.procedureService = procedureService;
+        this.modelMapper = modelMapper;
+    }
 
 
     @GetMapping("/public/procedures")

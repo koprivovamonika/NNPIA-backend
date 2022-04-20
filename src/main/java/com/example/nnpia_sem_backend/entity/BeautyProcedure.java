@@ -28,5 +28,6 @@ public class BeautyProcedure {
 
     @NotNull
     @Column
+    @Enumerated(EnumType.ORDINAL)
     private ProcedureStatus status;
 }
