@@ -4,6 +4,7 @@ import com.example.nnpia_sem_backend.dto.TimeSlotDto;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.BeautySalon;
 import com.example.nnpia_sem_backend.entity.Reservation;
+import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.BeautySalonRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
 import org.junit.jupiter.api.Assertions;
@@ -75,7 +76,7 @@ class BeautySalonServiceTest {
             reservations.add(reservation);
             reservations.add(reservation2);
 
-            Mockito.when(beautySalonService.reservationRepository.findReservationByReservationDate(date1))
+            Mockito.when(beautySalonService.reservationRepository.findReservationByReservationDateAndStatusIsNot(date1, ReservationStatus.DELETED))
                     .thenReturn(reservations);
 
             Integer expectedNotFreeTimeSlots = 2;

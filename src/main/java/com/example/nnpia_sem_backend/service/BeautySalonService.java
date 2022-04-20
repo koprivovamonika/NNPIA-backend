@@ -3,6 +3,7 @@ package com.example.nnpia_sem_backend.service;
 import com.example.nnpia_sem_backend.dto.TimeSlotDto;
 import com.example.nnpia_sem_backend.entity.BeautySalon;
 import com.example.nnpia_sem_backend.entity.Reservation;
+import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.BeautySalonRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class BeautySalonService {
         if(localDateTime.getDayOfWeek() == DayOfWeek.SATURDAY || localDateTime.getDayOfWeek() == DayOfWeek.SUNDAY){
             return new ArrayList<>();
         }
-        List<Reservation> reservations = reservationRepository.findReservationByReservationDate(date);
+        List<Reservation> reservations = reservationRepository.findReservationByReservationDateAndStatusIsNot(date, ReservationStatus.DELETED);
         LocalTime openingTime = beautySalon.getOpeningTime();
         LocalTime closingTime =beautySalon.getClosingTime();
 

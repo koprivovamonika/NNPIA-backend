@@ -56,8 +56,9 @@ public class ReservationService {
     public boolean cancelReservation(Long id, String description) {
         try {
             Reservation reservation = findById(id);
+            reservation.setStatus(ReservationStatus.DELETED);
             sendEmail(reservation, "Your reservation was cancelled.", "Hello!\nWe apologize, but your reservation at our beauty salon has been cancelled.\nThe reason is: " + description);
-            reservationRepository.deleteById(id);
+            reservationRepository.save(reservation);
             return true;
         } catch (NoSuchElementException exception) {
             return false;
@@ -69,7 +70,7 @@ public class ReservationService {
     }
 
     public Page<Reservation> getReservationByDate(Pageable paging, Long salonId, Date reservationDate){
-        return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDate(salonId, reservationDate, paging);
+        return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDateAndStatusIsNot(salonId, reservationDate, paging, ReservationStatus.DELETED);
     }
 
     private void sendEmail(Reservation reservation, String subject, String text) {

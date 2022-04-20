@@ -33,7 +33,7 @@ class ReservationRepositoryTest {
 
     @Test
     void findReservationByReservationDate() {
-        List<Reservation> reservationByReservationDateBefore = reservationRepository.findReservationByReservationDate(new Date());
+        List<Reservation> reservationByReservationDateBefore = reservationRepository.findReservationByReservationDateAndStatusIsNot(new Date(), ReservationStatus.DELETED);
 
         BeautyProcedure procedure = new BeautyProcedure();
         procedure.setName("My new procedure");
@@ -52,7 +52,7 @@ class ReservationRepositoryTest {
         reservation.setBeautyProcedure(procedure);
         reservationRepository.save(reservation);
 
-        List<Reservation> reservationByReservationDateAfter = reservationRepository.findReservationByReservationDate(new Date());
+        List<Reservation> reservationByReservationDateAfter = reservationRepository.findReservationByReservationDateAndStatusIsNot(new Date(), ReservationStatus.DELETED);
 
         Assertions.assertEquals(reservationByReservationDateBefore.size()+1, reservationByReservationDateAfter.size());
     }
