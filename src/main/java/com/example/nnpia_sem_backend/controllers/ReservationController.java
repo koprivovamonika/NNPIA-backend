@@ -42,7 +42,7 @@ public class ReservationController {
         if (reservationService.createReservation(reservation)) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", true);
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create reservation failed.", false);
+        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create reservation failed, maybe this time is already booked.", false);
     }
 
     @PutMapping("/api/reservation/confirm")
