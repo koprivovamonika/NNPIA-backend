@@ -16,13 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @RunWith(MockitoJUnitRunner.class)
 class ProcedureServiceTest {
 
-    ProcedureService procedureService = new ProcedureService();
-
-    @BeforeEach
-    void setUp() {
-        procedureService.reservationRepository = Mockito.mock(ReservationRepository.class);
-        procedureService.procedureRepository = Mockito.mock(ProcedureRepository.class);
-    }
+    ProcedureService procedureService = new ProcedureService(Mockito.mock(ProcedureRepository.class), Mockito.mock(ReservationRepository.class));
 
     @Test
     void updateProcedureSameName() {

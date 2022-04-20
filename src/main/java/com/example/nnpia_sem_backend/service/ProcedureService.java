@@ -4,7 +4,6 @@ import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.ProcedureStatus;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +14,13 @@ import java.util.Optional;
 @Service
 public class ProcedureService {
 
-    @Autowired
-    protected ProcedureRepository procedureRepository;
+    protected final ProcedureRepository procedureRepository;
+    protected final ReservationRepository reservationRepository;
 
-    @Autowired
-    protected ReservationRepository reservationRepository;
+    public ProcedureService(ProcedureRepository procedureRepository, ReservationRepository reservationRepository) {
+        this.procedureRepository = procedureRepository;
+        this.reservationRepository = reservationRepository;
+    }
 
     public List<BeautyProcedure> findAll() {
         return procedureRepository.findAllByStatus(ProcedureStatus.ACTIVE);

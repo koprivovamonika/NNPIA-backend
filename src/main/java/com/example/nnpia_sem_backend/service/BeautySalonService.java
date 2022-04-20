@@ -19,11 +19,13 @@ import java.util.List;
 
 @Service
 public class BeautySalonService {
-    @Autowired
-    protected BeautySalonRepository beautySalonRepository;
+    protected final BeautySalonRepository beautySalonRepository;
+    protected final ReservationRepository reservationRepository;
 
-    @Autowired
-    protected ReservationRepository reservationRepository;
+    public BeautySalonService(BeautySalonRepository beautySalonRepository, ReservationRepository reservationRepository) {
+        this.beautySalonRepository = beautySalonRepository;
+        this.reservationRepository = reservationRepository;
+    }
 
     public BeautySalon findById(Long id) {
         return beautySalonRepository.findBeautySalonById(id);

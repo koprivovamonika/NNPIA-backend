@@ -28,14 +28,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @RunWith(MockitoJUnitRunner.class)
 class BeautySalonServiceTest {
 
-    BeautySalonService beautySalonService = new BeautySalonService();
+    BeautySalonService beautySalonService = new BeautySalonService(Mockito.mock(BeautySalonRepository.class), Mockito.mock(ReservationRepository.class));
     Long beautySalonId;
 
     @BeforeEach
     void setUp() {
-        beautySalonService.beautySalonRepository = Mockito.mock(BeautySalonRepository.class);
-        beautySalonService.reservationRepository = Mockito.mock(ReservationRepository.class);
-
         beautySalonId = 1L;
         BeautySalon beautySalon = new BeautySalon();
         beautySalon.setOpeningTime(LocalTime.of(8, 00, 00));
