@@ -17,26 +17,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/token")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final LoginService loginService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private LoginService loginService;
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, LoginService loginService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.loginService = loginService;
+    }
 
     @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     public ApiResponse<AuthToken> generateToken(@RequestBody LoginDto loginUser) throws AuthenticationException {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
         final Login login = loginService.findByUsername(loginUser.getUsername());
         final String token = jwtTokenUtil.generateToken(login);
-        return new ApiResponse<>(200, "success",new AuthToken(token, login.getUserName(), login.getId()));
+        return new ApiResponse<>(200, "success", new AuthToken(token, login.getUserName(), login.getId()));
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ApiResponse<Void> logout() throws AuthenticationException {
-        return new ApiResponse<>(200, "success",null);
+        return new ApiResponse<>(200, "success", null);
     }
 
 }

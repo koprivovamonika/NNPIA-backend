@@ -2,10 +2,8 @@ package com.example.nnpia_sem_backend.service;
 
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.ProcedureStatus;
-import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +14,16 @@ import java.util.Optional;
 @Service
 public class ProcedureService {
 
-    @Autowired
     protected ProcedureRepository procedureRepository;
-
-    @Autowired
     protected ReservationRepository reservationRepository;
+
+    public ProcedureService(ProcedureRepository procedureRepository, ReservationRepository reservationRepository) {
+        this.procedureRepository = procedureRepository;
+        this.reservationRepository = reservationRepository;
+    }
+
+    public ProcedureService() {
+    }
 
     public List<BeautyProcedure> findAll() {
         return procedureRepository.findAllByStatus(ProcedureStatus.ACTIVE);
@@ -50,7 +53,7 @@ public class ProcedureService {
             beautyProcedure.setStatus(ProcedureStatus.ACTIVE);
             procedureRepository.save(beautyProcedure);
             return true;
-        }else if(beautyProcedureByName.getStatus() == ProcedureStatus.INACTIVE){
+        } else if (beautyProcedureByName.getStatus() == ProcedureStatus.INACTIVE) {
             beautyProcedure.setId(beautyProcedureByName.getId());
             beautyProcedure.setStatus(ProcedureStatus.ACTIVE);
             procedureRepository.save(beautyProcedure);
@@ -61,7 +64,7 @@ public class ProcedureService {
 
     public boolean updateProcedure(BeautyProcedure beautyProcedure, Long id) {
         try {
-            if (!procedureRepository.findByNameAndIdIsNot(beautyProcedure.getName(), id).isPresent()) {
+            if (procedureRepository.findByNameAndIdIsNot(beautyProcedure.getName(), id).isEmpty()) {
                 BeautyProcedure beautyProcedureById = findById(id);
                 if (beautyProcedureById != null) {
                     beautyProcedureById.setName(beautyProcedure.getName());
@@ -81,18 +84,16 @@ public class ProcedureService {
         try {
             BeautyProcedure beautyProcedure = findById(id);
             if (beautyProcedure != null) {
-                if(reservationRepository.existsByBeautyProcedure_Id(id)){
+                if (reservationRepository.existsByBeautyProcedure_Id(id)) {
                     beautyProcedure.setStatus(ProcedureStatus.INACTIVE);
                     procedureRepository.save(beautyProcedure);
-                }else{
+                } else {
                     procedureRepository.deleteById(id);
                 }
                 return true;
             }
             return false;
-        } catch (NoSuchElementException exception) {
-            return false;
-        } catch (DataIntegrityViolationException exception){
+        } catch (NoSuchElementException | DataIntegrityViolationException exception) {
             return false;
         }
     }

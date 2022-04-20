@@ -7,7 +7,6 @@ import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.service.BeautySalonService;
 import com.example.nnpia_sem_backend.service.ProcedureService;
 import com.example.nnpia_sem_backend.service.ReservationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -24,9 +22,7 @@ import java.util.List;
 @RequestMapping()
 public class ReservationController {
     private final BeautySalonService beautySalonService;
-
     private final ProcedureService procedureService;
-
     private final ReservationService reservationService;
 
     public ReservationController(BeautySalonService beautySalonService, ProcedureService procedureService, ReservationService reservationService) {
@@ -35,23 +31,22 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-
     @GetMapping("/public/reservation")
     public List<TimeSlotDto> getAll(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, Long id) {
         return beautySalonService.getTimeSlotsForDate(date, id);
     }
 
     @PostMapping("/public/reservation")
-    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn){
+    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn) {
         Reservation reservation = convertToEntity(createReservationDtoIn);
-        if(reservationService.createReservation(reservation)){
+        if (reservationService.createReservation(reservation)) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", true);
         }
         return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create reservation failed.", false);
     }
 
     @PutMapping("/api/reservation/confirm")
-    public ApiResponse<Boolean> confirmReservation(@RequestBody ConfirmDtoIn resId){
+    public ApiResponse<Boolean> confirmReservation(@RequestBody ConfirmDtoIn resId) {
         if (reservationService.confirmReservation(resId.getReservationId())) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation confirmed successfully.", true);
         }
@@ -59,7 +54,7 @@ public class ReservationController {
     }
 
     @PutMapping("/api/reservation/asDone")
-    public ApiResponse<Boolean> setAsDone(@RequestBody ConfirmDtoIn resId){
+    public ApiResponse<Boolean> setAsDone(@RequestBody ConfirmDtoIn resId) {
         if (reservationService.setAsDone(resId.getReservationId())) {
             return new ApiResponse<>(HttpStatus.OK.value(), "Reservation was set as done.", true);
         }
@@ -75,11 +70,11 @@ public class ReservationController {
     }
 
     @GetMapping("/api/reservation")
-    public ApiResponse<ReservationPagingDto> getAllByDateAndStatus(Long salonId,@DateTimeFormat(pattern = "yyyy-MM-dd") Date date, ReservationStatus status, Pageable pageable){
+    public ApiResponse<ReservationPagingDto> getAllByDateAndStatus(Long salonId, @DateTimeFormat(pattern = "yyyy-MM-dd") Date date, ReservationStatus status, Pageable pageable) {
         Page<Reservation> pagedResult;
-        if(status != ReservationStatus.CREATED && status != ReservationStatus.CONFIRMED && status != ReservationStatus.DONE){
+        if (status != ReservationStatus.CREATED && status != ReservationStatus.CONFIRMED && status != ReservationStatus.DONE) {
             pagedResult = reservationService.getReservationByDate(pageable, salonId, date);
-        }else{
+        } else {
             pagedResult = reservationService.getReservationByDateAndStatus(pageable, salonId, date, status);
         }
         ReservationPagingDto reservationPagingDto = convertToPagingDto(pagedResult);
@@ -87,7 +82,7 @@ public class ReservationController {
     }
 
 
-    private Reservation convertToEntity(CreateReservationDtoIn createReservationDtoIn){
+    private Reservation convertToEntity(CreateReservationDtoIn createReservationDtoIn) {
         Reservation reservation = new Reservation();
         reservation.setEmail(createReservationDtoIn.getEmail());
         reservation.setReservationDate(createReservationDtoIn.getDate());
@@ -100,7 +95,7 @@ public class ReservationController {
         return reservation;
     }
 
-    private ReservationPagingDto convertToPagingDto(Page<Reservation> pagedResult){
+    private ReservationPagingDto convertToPagingDto(Page<Reservation> pagedResult) {
         if (pagedResult.hasContent()) {
             ReservationPagingDto reservationPagingDto = new ReservationPagingDto();
             reservationPagingDto.setReservationList(pagedResult.getContent());

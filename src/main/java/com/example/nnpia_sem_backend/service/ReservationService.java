@@ -4,7 +4,6 @@ import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.ReservationPagingRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,16 +14,17 @@ import java.util.Optional;
 
 @Service
 public class ReservationService {
-    @Autowired
-    ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
+    private final EmailService emailService;
+    private final ReservationPagingRepository reservationPagingRepository;
 
-    @Autowired
-    EmailService emailService;
+    public ReservationService(ReservationRepository reservationRepository, EmailService emailService, ReservationPagingRepository reservationPagingRepository) {
+        this.reservationRepository = reservationRepository;
+        this.emailService = emailService;
+        this.reservationPagingRepository = reservationPagingRepository;
+    }
 
-    @Autowired
-    ReservationPagingRepository reservationPagingRepository;
-
-    public boolean createReservation(Reservation reservation){
+    public boolean createReservation(Reservation reservation) {
         reservationRepository.save(reservation);
         sendEmail(reservation, "Confirmation of reservation.", "Hello!\nYour reservation has been created. Please wait until you receive a confirmation email from us.");
         return true;
@@ -65,11 +65,11 @@ public class ReservationService {
         }
     }
 
-    public Page<Reservation> getReservationByDateAndStatus(Pageable paging, Long salonId, Date reservationDate, ReservationStatus status){
+    public Page<Reservation> getReservationByDateAndStatus(Pageable paging, Long salonId, Date reservationDate, ReservationStatus status) {
         return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDateAndStatus(salonId, reservationDate, status, paging);
     }
 
-    public Page<Reservation> getReservationByDate(Pageable paging, Long salonId, Date reservationDate){
+    public Page<Reservation> getReservationByDate(Pageable paging, Long salonId, Date reservationDate) {
         return reservationPagingRepository.findAllByBeautySalon_IdAndReservationDateAndStatusIsNot(salonId, reservationDate, paging, ReservationStatus.DELETED);
     }
 
