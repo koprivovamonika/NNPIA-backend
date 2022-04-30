@@ -1,6 +1,5 @@
 package com.example.nnpia_sem_backend.service;
 
-import com.example.nnpia_sem_backend.dto.TimeSlotDto;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.repository.ReservationPagingRepository;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -32,18 +30,18 @@ public class ReservationService {
 
         boolean canSave = true;
         for (Reservation reservationFromDb : reservations) {
-            if(!(reservation.getStartTime().plusMinutes(1).isBefore(reservationFromDb.getStartTime()) && reservation.getEndTime().minusMinutes(1).isBefore(reservationFromDb.getStartTime()) ) &&
-                    !(reservation.getStartTime().plusMinutes(1).isAfter(reservationFromDb.getEndTime()) && reservation.getEndTime().minusMinutes(1).isAfter(reservationFromDb.getEndTime()))){
+            if (!(reservation.getStartTime().plusMinutes(1).isBefore(reservationFromDb.getStartTime()) && reservation.getEndTime().minusMinutes(1).isBefore(reservationFromDb.getStartTime())) &&
+                    !(reservation.getStartTime().plusMinutes(1).isAfter(reservationFromDb.getEndTime()) && reservation.getEndTime().minusMinutes(1).isAfter(reservationFromDb.getEndTime()))) {
                 canSave = false;
                 break;
             }
         }
 
-        if(canSave){
+        if (canSave) {
             reservationRepository.save(reservation);
             sendEmail(reservation, "Confirmation of reservation.", "Hello!\nYour reservation has been created. Please wait until you receive a confirmation email from us.");
             return true;
-        }else{
+        } else {
             return false;
         }
 

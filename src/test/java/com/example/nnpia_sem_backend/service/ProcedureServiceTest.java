@@ -3,7 +3,6 @@ package com.example.nnpia_sem_backend.service;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.repository.ProcedureRepository;
 import com.example.nnpia_sem_backend.repository.ReservationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
