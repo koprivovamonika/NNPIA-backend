@@ -48,14 +48,14 @@ class IntegrationServiceTest {
     }
 
     @Test
-    void createReservationAfterCreateProcedure() {
+    void createReservationAfterCreateProcedure() throws Exception {
         BeautyProcedure procedure = new BeautyProcedure();
         procedure.setName("Test procedure");
         procedure.setDescription("This is test procedure.");
         procedure.setPrice(400.0);
         procedure.setStatus(ProcedureStatus.ACTIVE);
 
-        boolean procedureCreate = procedureService.createProcedure(procedure);
+        BeautyProcedure procedureCreate = procedureService.createProcedure(procedure);
         BeautyProcedure newProcedure = procedureService.findProcedureByName("Test procedure");
 
         Reservation reservation = new Reservation();
@@ -67,9 +67,9 @@ class IntegrationServiceTest {
         reservation.setBeautyProcedure(newProcedure);
         reservation.setBeautySalon(beautySalonService.findById(1L));
 
-        boolean reservationCreate = reservationService.createReservation(reservation);
+        Reservation reservationCreate = reservationService.createReservation(reservation);
 
-        Assertions.assertTrue(procedureCreate);
-        Assertions.assertTrue(reservationCreate);
+        Assertions.assertEquals(procedureCreate, procedure);
+        Assertions.assertEquals(reservationCreate, reservation);
     }
 }

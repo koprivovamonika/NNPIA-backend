@@ -25,61 +25,36 @@ public class ReservationService {
         this.reservationPagingRepository = reservationPagingRepository;
     }
 
-    public boolean createReservation(Reservation reservation) {
+    public Reservation createReservation(Reservation reservation) throws Exception {
         List<Reservation> reservations = reservationRepository.findReservationByReservationDateAndStatusIsNot(reservation.getReservationDate(), ReservationStatus.DELETED);
-
-        boolean canSave = true;
-        for (Reservation reservationFromDb : reservations) {
-            if (!(reservation.getStartTime().plusMinutes(1).isBefore(reservationFromDb.getStartTime()) && reservation.getEndTime().minusMinutes(1).isBefore(reservationFromDb.getStartTime())) &&
-                    !(reservation.getStartTime().plusMinutes(1).isAfter(reservationFromDb.getEndTime()) && reservation.getEndTime().minusMinutes(1).isAfter(reservationFromDb.getEndTime()))) {
-                canSave = false;
-                break;
-            }
-        }
-
-        if (canSave) {
+        if (controlTime(reservation, reservations)) {
             reservationRepository.save(reservation);
             sendEmail(reservation, "Confirmation of reservation.", "Hello!\nYour reservation has been created. Please wait until you receive a confirmation email from us.");
-            return true;
+            return reservation;
         } else {
-            return false;
+            throw new Exception("This time slot is already reserved");
         }
 
     }
 
-    public boolean confirmReservation(Long id) {
-        try {
-            Reservation reservation = findById(id);
-            reservation.setStatus(ReservationStatus.CONFIRMED);
-            sendEmail(reservation, "Confirmation of reservation.", "Hello!\nWe confirm your reservation in our beauty salon.\nWe look forward to seeing you on " + reservation.getReservationDate() + " at " + reservation.getStartTime());
-            reservationRepository.save(reservation);
-            return true;
-        } catch (NoSuchElementException exception) {
-            return false;
-        }
+    public Reservation confirmReservation(Long id) {
+        Reservation reservation = findById(id);
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        sendEmail(reservation, "Confirmation of reservation.", "Hello!\nWe confirm your reservation in our beauty salon.\nWe look forward to seeing you on " + reservation.getReservationDate() + " at " + reservation.getStartTime());
+        return reservationRepository.save(reservation);
     }
 
-    public boolean setAsDone(Long id) {
-        try {
-            Reservation reservation = findById(id);
-            reservation.setStatus(ReservationStatus.DONE);
-            reservationRepository.save(reservation);
-            return true;
-        } catch (NoSuchElementException exception) {
-            return false;
-        }
+    public Reservation setAsDone(Long id) {
+        Reservation reservation = findById(id);
+        reservation.setStatus(ReservationStatus.DONE);
+        return reservationRepository.save(reservation);
     }
 
-    public boolean cancelReservation(Long id, String description) {
-        try {
-            Reservation reservation = findById(id);
-            reservation.setStatus(ReservationStatus.DELETED);
-            sendEmail(reservation, "Your reservation was cancelled.", "Hello!\nWe apologize, but your reservation at our beauty salon has been cancelled.\nThe reason is: " + description);
-            reservationRepository.save(reservation);
-            return true;
-        } catch (NoSuchElementException exception) {
-            return false;
-        }
+    public Reservation cancelReservation(Long id, String description) {
+        Reservation reservation = findById(id);
+        reservation.setStatus(ReservationStatus.DELETED);
+        sendEmail(reservation, "Your reservation was cancelled.", "Hello!\nWe apologize, but your reservation at our beauty salon has been cancelled.\nThe reason is: " + description);
+        return reservationRepository.save(reservation);
     }
 
     public Page<Reservation> getReservationByDateAndStatus(Pageable paging, Long salonId, Date reservationDate, ReservationStatus status) {
@@ -100,6 +75,18 @@ public class ReservationService {
             }
         });
         t.start();
+    }
+
+    private boolean controlTime(Reservation reservation, List<Reservation> reservations) {
+        boolean canSave = true;
+        for (Reservation reservationFromDb : reservations) {
+            if (!(reservation.getStartTime().plusMinutes(1).isBefore(reservationFromDb.getStartTime()) && reservation.getEndTime().minusMinutes(1).isBefore(reservationFromDb.getStartTime())) &&
+                    !(reservation.getStartTime().plusMinutes(1).isAfter(reservationFromDb.getEndTime()) && reservation.getEndTime().minusMinutes(1).isAfter(reservationFromDb.getEndTime()))) {
+                canSave = false;
+                break;
+            }
+        }
+        return canSave;
     }
 
     private Reservation findById(Long id) {

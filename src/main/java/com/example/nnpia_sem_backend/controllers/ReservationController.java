@@ -2,6 +2,7 @@ package com.example.nnpia_sem_backend.controllers;
 
 import com.example.nnpia_sem_backend.dto.*;
 import com.example.nnpia_sem_backend.entity.ApiResponse;
+import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.entity.Reservation;
 import com.example.nnpia_sem_backend.entity.ReservationStatus;
 import com.example.nnpia_sem_backend.service.BeautySalonService;
@@ -37,36 +38,45 @@ public class ReservationController {
     }
 
     @PostMapping("/public/reservation")
-    public ApiResponse<Boolean> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn) {
-        Reservation reservation = convertToEntity(createReservationDtoIn);
-        if (reservationService.createReservation(reservation)) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", true);
+    public ApiResponse<ReservationDtoOut> createReservation(@RequestBody @Valid CreateReservationDtoIn createReservationDtoIn) {
+        try {
+            Reservation reservation = convertToEntity(createReservationDtoIn);
+            ReservationDtoOut reservationCreated = convertToReservationDto(reservationService.createReservation(reservation));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation created successfully.", reservationCreated);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Create reservation failed, maybe this time is already booked.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create reservation failed, maybe this time is already booked.", false);
     }
 
     @PutMapping("/api/reservation/confirm")
-    public ApiResponse<Boolean> confirmReservation(@RequestBody ConfirmDtoIn resId) {
-        if (reservationService.confirmReservation(resId.getReservationId())) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation confirmed successfully.", true);
+    public ApiResponse<ReservationDtoOut> confirmReservation(@RequestBody ConfirmDtoIn resId) {
+        try {
+            ReservationDtoOut reservation = convertToReservationDto(reservationService.confirmReservation(resId.getReservationId()));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation confirmed successfully.", reservation);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Confirm reservation failed.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Confirm reservation failed.", false);
     }
 
     @PutMapping("/api/reservation/asDone")
-    public ApiResponse<Boolean> setAsDone(@RequestBody ConfirmDtoIn resId) {
-        if (reservationService.setAsDone(resId.getReservationId())) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation was set as done.", true);
+    public ApiResponse<ReservationDtoOut> setAsDone(@RequestBody ConfirmDtoIn resId) {
+        try {
+            ReservationDtoOut reservation = convertToReservationDto(reservationService.setAsDone(resId.getReservationId()));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation was set as done.", reservation);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Setting reservation as done failed.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Setting reservation as done failed.", false);
     }
 
     @PutMapping("/api/reservation/cancel")
-    public ApiResponse<Boolean> cancelReservation(@RequestBody CancelDtoIn cancelDtoIn) {
-        if (reservationService.cancelReservation(cancelDtoIn.getReservationId(), cancelDtoIn.getDescription())) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation cancelled successfully.", true);
+    public ApiResponse<ReservationDtoOut> cancelReservation(@RequestBody CancelDtoIn cancelDtoIn) {
+        try {
+            ReservationDtoOut reservation = convertToReservationDto(reservationService.cancelReservation(cancelDtoIn.getReservationId(), cancelDtoIn.getDescription()));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Reservation cancelled successfully.", reservation);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Cancel reservation failed.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Cancel reservation failed.", false);
+
     }
 
     @GetMapping("/api/reservation")
@@ -78,7 +88,7 @@ public class ReservationController {
             pagedResult = reservationService.getReservationByDateAndStatus(pageable, salonId, date, status);
         }
         ReservationPagingDto reservationPagingDto = convertToPagingDto(pagedResult);
-        return new ApiResponse<>(HttpStatus.OK.value(), "", reservationPagingDto);
+        return new ApiResponse<>(HttpStatus.OK.value(), "OK", reservationPagingDto);
     }
 
 
@@ -91,8 +101,15 @@ public class ReservationController {
         reservation.setStatus(ReservationStatus.CREATED);
         reservation.setBeautyProcedure(procedureService.findById(procedureService.findIdByName(createReservationDtoIn.getProcedureDto().getName())));
         reservation.setBeautySalon(beautySalonService.findById(createReservationDtoIn.getSalonId()));
-
         return reservation;
+    }
+
+    private ReservationDtoOut convertToReservationDto(Reservation reservation) {
+        ReservationDtoOut reservationDtoOut = new ReservationDtoOut();
+        reservationDtoOut.setDate(reservation.getReservationDate());
+        reservationDtoOut.setEmail(reservationDtoOut.getEmail());
+        reservationDtoOut.setTimeSlotDto(new TimeSlotDto(reservation.getStartTime(), reservation.getEndTime(), true));
+        return reservationDtoOut;
     }
 
     private ReservationPagingDto convertToPagingDto(Page<Reservation> pagedResult) {

@@ -6,7 +6,6 @@ import com.example.nnpia_sem_backend.entity.ApiResponse;
 import com.example.nnpia_sem_backend.entity.BeautyProcedure;
 import com.example.nnpia_sem_backend.service.ProcedureService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,35 +29,40 @@ public class ProcedureController {
     @GetMapping("/public/procedures")
     public ApiResponse<List<ProcedureDto>> getAll() {
         List<BeautyProcedure> beautyProcedures = procedureService.findAll();
-        return  new ApiResponse<>(HttpStatus.OK.value(), "OK.",beautyProcedures.stream().map(this::convertToDto).collect(Collectors.toList()));
+        return new ApiResponse<>(HttpStatus.OK.value(), "OK.", beautyProcedures.stream().map(this::convertToDto).collect(Collectors.toList()));
     }
 
     @PostMapping("/api/procedure")
-    public ApiResponse<Boolean> createProcedure(@RequestBody @Valid ProcedureCreateDto procedureDto){
-        BeautyProcedure beautyProcedure = convertToEntity(procedureDto);
-        if (procedureService.createProcedure(beautyProcedure)) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure created successfully.", true);
+    public ApiResponse<ProcedureDto> createProcedure(@RequestBody @Valid ProcedureCreateDto procedureDto) {
+        try {
+            BeautyProcedure beautyProcedure = convertToEntity(procedureDto);
+            ProcedureDto createdProcedure = convertToDto(procedureService.createProcedure(beautyProcedure));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure created successfully.", createdProcedure);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Procedure create fail.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Create procedure fail.", false);
     }
 
     @PutMapping("/api/procedure")
-    public ApiResponse<Boolean> updateProcedure(@RequestBody @Valid ProcedureDto procedureDto){
-        BeautyProcedure beautyProcedure = convertToEntity(procedureDto);
-        if (procedureService.updateProcedure(beautyProcedure, procedureDto.getId())) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure updated successfully.", true);
+    public ApiResponse<ProcedureDto> updateProcedure(@RequestBody @Valid ProcedureDto procedureDto) {
+        try {
+            BeautyProcedure beautyProcedure = convertToEntity(procedureDto);
+            ProcedureDto updatedProcedure = convertToDto(procedureService.updateProcedure(beautyProcedure, procedureDto.getId()));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure updated successfully.", updatedProcedure);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Update procedure fail");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Update procedure fail.", false);
     }
 
     @DeleteMapping("/api/procedure")
-    public ApiResponse<Boolean> deleteProcedure(Long id){
-        if (procedureService.deleteProcedure(id)) {
-            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure deleted successfully.", true);
+    public ApiResponse<ProcedureDto> deleteProcedure(Long id) {
+        try {
+            ProcedureDto deletedProcedure = convertToDto(procedureService.deleteProcedure(id));
+            return new ApiResponse<>(HttpStatus.OK.value(), "Procedure deleted successfully.", deletedProcedure);
+        } catch (Exception exception) {
+            return new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Delete procedure fail. There may be reservations for this procedure.");
         }
-        return new ApiResponse<>(HttpStatus.CONFLICT.value(), "Delete procedure fail. There may be reservations for this procedure.", false);
     }
-
 
     private ProcedureDto convertToDto(BeautyProcedure beautyProcedure) {
         ProcedureDto procedureDto = modelMapper.map(beautyProcedure, ProcedureDto.class);
