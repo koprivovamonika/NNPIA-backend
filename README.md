@@ -1,6 +1,7 @@
 ## NNPIA semestrální práce - backend
 
 Napsáno v spring boot. Slouží jako REST API rozhranní pro React frontend aplikaci.
+Nasazeno na platformě [heroku](https://nnpia-backend.herokuapp.com/)
 
 #### Téma
 Tématem semestrální práce bylo napsání aplikace pro kosmetický salon.
